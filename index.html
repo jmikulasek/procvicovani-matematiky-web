@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-size: 64pt; text-align: left; margin: 32pt 32pt 0 32pt; font-family: sans-serif;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#dashboard { font-size: 32pt; text-align: center;}
+#dashboard table { margin: 0 auto 24pt auto; }
+#dashboard th { text-align: right; padding: 12pt; font-weight: normal;}
+#dashboard td { text-align: left; padding: 12pt;}
+.dashboard-button { cursor: pointer; background-color: #f0f0f0; margin: 0; padding: 6pt; width: 45pt; display: block; text-align: center; float: left; border-right: solid 1px #fff;}
+.selected-button { background-color: #f00;}
+.run-button { cursor: pointer; background-color: #8ff100; margin: 24pt; padding: 6pt; text-align: center;}
+#sidebar { float: right; margin: 0 0 0 0; }
+#calculator { border-collapse: collapse;margin: 0;}
+#calculator td { width: 90pt; text-align: center; background: #f0f0f0; cursor: pointer; margin: 2pt; border: solid 6pt white;}
+#calculator td.completed-button { font-size: 32pt; background-color: #8ff100; padding: 16pt;}
+#counter { margin: 0 0 0 0; font-size: 16pt; width: 100%;}
+#counter th {font-weight: normal; text-align: right; width: 50%;}
+#exercises { color: #aaa; font-size: 50%; margin: 32pt 0 0 0;}
+#exercises .with-mistake { color: #f00;}
+</style>
+<script type="text/javascript" src="matematika.js"></script>
+<script>
+var mathExerciser;
+
+function run() {
+    var operation = document.getElementById("operation").value;
+    var maxOperand1 = document.getElementById("max-operand-1").value;
+    var maxOperand2 = document.getElementById("max-operand-2").value;
+
+    if (operation === "addition") {
+        mathExerciser = new MathExerciser(function(a, b) { return a+b;}, "+", 1, maxOperand1, 1, maxOperand2, false);
+    } else if (operation === "subtraction") {
+        mathExerciser = new MathExerciser(function(a, b) { return a-b;}, "-", 1, maxOperand1, 1, maxOperand2, true);
+    } else if (operation === "multiplication") {
+        mathExerciser = new MathExerciser(function(a, b) { return a*b;}, "&times;", 1, maxOperand1, 1, maxOperand2, false);
+    }
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("exercise").style.display = "block";
+    mathExerciser.startExercise();
+}
+
+function setOption(o, v) {
+    document.getElementById(o).value = v;
+    var optionButtons = document.querySelectorAll(".option-" + o);
+    for (var i=0; i<optionButtons.length; i++) {
+        optionButtons[i].style.backgroundColor= '#f0f0f0';
+    }
+    event.target.style.backgroundColor = '#f00';
+}
+
+function drawPressed(event) { event.target.style.backgroundColor = '#d0d0d0';}
+function drawReleased(event) { event.target.style.backgroundColor = '#f0f0f0';}
+function drawReleased2(event) { event.target.style.backgroundColor = '#8ff100';}
+</script>
+</head>
+<body>
+<div id="dashboard">
+<input type="hidden" id="max-operand-1" value="10">
+<input type="hidden" id="max-operand-2" value="10">
+<input type="hidden" id="operation" value="multiplication">
+<h1>Procvičování matematiky</h1>
+<table>
+<tr>
+    <th>První operand do:</th>
+    <td>
+        <span class="option-max-operand-1 dashboard-button selected-button" onclick="setOption('max-operand-1', 10)">10</span>
+        <span class="option-max-operand-1 dashboard-button" onclick="setOption('max-operand-1', 20)">20</span>
+        <span class="option-max-operand-1 dashboard-button" onclick="setOption('max-operand-1', 30)">30</span>
+        <span class="option-max-operand-1 dashboard-button" onclick="setOption('max-operand-1', 40)">40</span>
+        <span class="option-max-operand-1 dashboard-button" onclick="setOption('max-operand-1', 50)">50</span>
+    </td>
+</tr>
+<tr>
+    <th>Druhý operand do:</th>
+    <td>
+        <span class="option-max-operand-2 dashboard-button selected-button" onclick="setOption('max-operand-2', 10)">10</span>
+        <span class="option-max-operand-2 dashboard-button" onclick="setOption('max-operand-2', 20)">20</span>
+        <span class="option-max-operand-2 dashboard-button" onclick="setOption('max-operand-2', 30)">30</span>
+        <span class="option-max-operand-2 dashboard-button" onclick="setOption('max-operand-2', 40)">40</span>
+        <span class="option-max-operand-2 dashboard-button" onclick="setOption('max-operand-2', 50)">50</span>
+    </td>
+</tr>
+<tr>
+    <th>Operace:</th>
+    <td>
+        <span class="option-operation dashboard-button" onclick="setOption('operation', 'addition')">+</span>
+        <span class="option-operation dashboard-button" onclick="setOption('operation','subtraction')">-</span>
+        <span class="option-operation dashboard-button selected-button" onclick="setOption('operation','multiplication')">&times;</span>
+    </td>
+</tr>
+</table>
+
+<span class="run-button" onclick="run()">Spustit test</span>
+</div>
+
+<div id="exercise" style="display: none">
+<div id="audio">
+<audio id="sound-dobre-ty" src="dobre-ty.wav"></audio>
+<audio id="sound-hezky" src="hezky.wav"></audio>
+<audio id="sound-zkus-to-znovu" src="zkus-to-znovu.wav"></audio>
+</div>
+
+<div id="sidebar">
+<table id="calculator">
+<tr>
+    <td onclick="mathExerciser.enterDigit(1)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">1</td>
+    <td onclick="mathExerciser.enterDigit(2)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">2</td>
+    <td onclick="mathExerciser.enterDigit(3)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">3</td>
+</tr>
+<tr>
+    <td onclick="mathExerciser.enterDigit(4)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">4</td>
+    <td onclick="mathExerciser.enterDigit(5)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">5</td>
+    <td onclick="mathExerciser.enterDigit(6)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">6</td>
+</tr>
+<tr>
+    <td onclick="mathExerciser.enterDigit(7)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">7</td>
+    <td onclick="mathExerciser.enterDigit(8)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">8</td>
+    <td onclick="mathExerciser.enterDigit(9)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">9</td>
+</tr>
+<tr>
+    <td onclick="mathExerciser.clearLastDigit()" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">&lt;</td>
+    <td onclick="mathExerciser.enterDigit(0)" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">0</td>
+    <td onclick="mathExerciser.clearAllDigits()" onmousedown="drawPressed(event)" onmouseup="drawReleased(event)" onmouseout="drawReleased(event)">C</td>
+</tr>
+<tr>
+    <td colspan=3 class="completed-button" onclick="mathExerciser.checkResult()" onmousedown="drawPressed(event)" onmouseup="drawReleased2(event)" onmouseout="drawReleased2(event)">KONTROLA</td>
+</tr>
+</table>
+<table id="counter">
+<tr><th>Příkladů:</td><td id="success-counter">0</td></tr>
+<tr><th>Chyb:</th><td id="error-counter">0</td></tr>
+</table>
+</div>
+
+<div id="current-exercise">
+<span id="operand1"></span> <span id="operator"></span> <span id="operand2"></span> = <span id="result"></span>
+</div>
+
+<div id="exercises">
+</div>
+</div>
+</body>
+</html>
