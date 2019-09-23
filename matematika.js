@@ -50,12 +50,11 @@ MathExerciser.prototype.clearAllDigits = function() {
 }
 
 MathExerciser.prototype.checkResult = function() {
+    var exerciseNode = document.createElement("div");
+    exerciseNode.innerHTML = this.operand1 + " " + this.operator + " " + this.operand2 + " = " + this.result;
+    var exercisesNode = document.getElementById("exercises");
+    exercisesNode.insertBefore(exerciseNode, exercisesNode.firstChild);
     if (this.operation(this.operand1, this.operand2) === parseInt(this.result)) {
-        var exerciseNode = document.createElement("div");
-        if (this.mistakeMade) { exerciseNode.className = "with-mistake"; }
-        exerciseNode.innerHTML = this.operand1 + " " + this.operator + " " + this.operand2 + " = " + this.operation(this.operand1, this.operand2);
-        var exercisesNode = document.getElementById("exercises");
-        exercisesNode.insertBefore(exerciseNode, exercisesNode.firstChild);
         this.successCounter += 1;
         var soundName = this.sucessMessages[Math.floor(Math.random() * 2)];
         document.getElementById(soundName).play();
@@ -64,6 +63,7 @@ MathExerciser.prototype.checkResult = function() {
         this.errorCounter += 1;
         this.mistakeMade = true;
         this.result = "";
+        exerciseNode.className = "with-mistake";
         document.getElementById("result").innerHTML = this.result;
         document.getElementById("sound-zkus-to-znovu").play();
     }
